@@ -1,4 +1,4 @@
-class hotspot_function(object):    
+   
     
     def each_position(length, mut_data):
         tt = length+1
