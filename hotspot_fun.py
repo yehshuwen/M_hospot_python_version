@@ -13,7 +13,7 @@ class hotspot_function(object):
         Count.rename(columns={0: 'mutation'}, inplace=True)
         #i=1
         for i in range(len(mut_data)):
-            if(Count['mutation'][i]==0):
+            if Count['mutation'][i]==0:
                 num = np.size(np.where(mut_data['v2'] == mut_data['v2'].iloc[i]))
                 #num = len(mut_data['v2'] == mut_data['v2'].iloc[i])
                 position = mut_data['v2'].iloc[i]-1
@@ -22,10 +22,10 @@ class hotspot_function(object):
                 #Count = pd.DataFrame(Count)
                 TL = pd.DataFrame(TL)
                 rCount = pd.concat([TL,Count], axis=1, ignore_index=True)
-                return(rCount)
+                return rCount
     
     def Extend_region(peak_region_min, peak_region_max, remain_gap, mutation):
-        if(len(mutation)==1):
+        if len(mutation)==1:
             peak_region = 10
         else:
             count = mutation.drop(mutation.index[-1])
@@ -35,15 +35,15 @@ class hotspot_function(object):
             gap1 = list(chain.from_iterable(gap1))
             gap = sorted(gap1)
             new_gap = gap[0:math.ceil(len(gap)*remain_gap)]
-            if(len(new_gap) == 1):
+            if len(new_gap) == 1:
                 peak_region = math.ceil(mean(new_gap))
             else:
                 peak_region = math.ceil(mean(new_gap)+std(new_gap))
-        if(peak_region < peak_region_min):
+        if peak_region < peak_region_min:
             peak_region = peak_region_min
-        if(peak_region > peak_region_max):
+        if peak_region > peak_region_max:
             peak_region = peak_region_max
-        return(peak_region)
+        return peak_region
             
                             
     def Density_information(length, alph1, rCount):
@@ -59,7 +59,7 @@ class hotspot_function(object):
                 score = np.exp((-np.abs(i-k))/(alph1**2))*rCount.iloc[k:k+1,1:2]
                 final_score = score.iloc[0:1,0:1] + final_score['mutation'].iloc[0]
             final.iloc[i:i+1,0:1]= final_score['mutation'].iloc[0]
-        return(final)         
+        return final         
     
     
     def mountain_clusting(mutation, final, num_center, length, beta):
@@ -74,7 +74,7 @@ class hotspot_function(object):
         P_score = pd.DataFrame(P_score)
         P_score.rename(columns={0: 'score'}, inplace=True)
         for w in range(num_center):
-            if(w == 0):
+            if w == 0:
                 #PP[w] = P1
                 PP.append(P1)
             else:
@@ -90,7 +90,7 @@ class hotspot_function(object):
         
         final_p = mutation[mutation['position'].isin(final_p)]
        #df[df['A'].isin([3, 6])]
-        return(final_p)
+        return final_p
 
     def extend(final_P, peak_region, mutation, rCount):
         position_star = []
@@ -104,19 +104,19 @@ class hotspot_function(object):
             grade.index = range(1,np.size(grade)+1)
             center = grade[grade == 0].index[0]
             #center = np.where(grade == 0).index[0]
-            if(center == 1 or center == np.size(grade) ):
-                if(center == 1):
+            if center == 1 or center == np.size(grade):
+                if center == 1:
                     position_star.append(mutation['position'][center])
                     o=1
                     for o in range(1,np.size(mutation) - center+1):
-                        if (o == 1):
-                            if(np.abs(grade[center + o]) <= peak_region):
+                        if o == 1:
+                            if np.abs(grade[center + o]) <= peak_region:
                                 position_end.append(mutation['position'][center+o])
                             else:
                                 position_end.append(mutation['position'][center])
                                 break
                         else:
-                            if(np.abs(np.abs(grade[center+o]) - np.abs(grade[center + o -1])) <= peak_region):
+                            if np.abs(np.abs(grade[center+o]) - np.abs(grade[center + o -1])) <= peak_region:
                                 position_end.append(mutation['position'][center+o])
                             else:
                                 position_end.append(mutation['position'][center+o-1])
@@ -125,44 +125,43 @@ class hotspot_function(object):
                     position_end.append(mutation['position'][center])
                     u = 1
                     for u in range(1,center-1+1):
-                        if(u == 1):
-                            if((np.abs(grade[center - u])) <= peak_region):
+                        if u == 1:
+                            if np.abs(grade[center - u]) <= peak_region:
                                 position_star.append(mutation['position'][center - u])
                             else:
                                 position_star.append(mutation['position'][center])
                                 break
                         else:
-                            if(np.abs(np.abs(grade[center - u]) - np.abs(grade[center - u +1])) <= peak_region):
+                            if np.abs(np.abs(grade[center - u]) - np.abs(grade[center - u +1])) <= peak_region:
                                 position_star.append(mutation['position'][center - u])
                             else:
                                 position_star.append(mutation['position'][center - u+1])
                                 break
-
             else:
                 u = 1
                 for u in range(1,center-1+1):
-                    if(u == 1):
-                        if(np.abs(grade[center - u]) <= peak_region):
+                    if u == 1:
+                        if np.abs(grade[center - u]) <= peak_region:
                             position_star.append(mutation['position'][center - u])
                         else:
                             position_star.append(mutation['position'][center])
                             break
                     else:
-                        if(np.abs(np.abs(grade[center - u]) - np.abs(grade[center -u +1])) <= peak_region):
+                        if np.abs(np.abs(grade[center - u]) - np.abs(grade[center -u +1])) <= peak_region:
                             position_star.append(mutation['position'][center - u])
                         else:
                             position_star.append(mutation['position'][center - u +1])
                             break
                     
                 for o in range(1,np.size(mutation)-center+1):
-                    if(o == 1):
-                        if(np.abs(grade[center + o]) <= peak_region):
+                    if o == 1:
+                        if np.abs(grade[center + o]) <= peak_region:
                             position_end.append(mutation['position'][center+o])
                         else:
                             position_end.append(mutation['position'][center])
                             break
                     else:
-                        if(np.abs(np.abs(grade[center + o]) - np.abs(grade[center + o -1])) <= peak_region):
+                        if np.abs(np.abs(grade[center + o]) - np.abs(grade[center + o -1])) <= peak_region:
                             position_end.append(mutation['position'][center+o])
                         else:     
                             position_end.append(mutation['position'][center+o-1])
@@ -177,7 +176,7 @@ class hotspot_function(object):
         m_count = []
         for s in range(np.size(uniq_star)):
             #sum(rCount['mutation'].iloc[int(uniq_star[0])],rCount['mutation'].iloc[int(uniq_end[0])])
-            if(uniq_star[s] != uniq_end[s]):                                   
+            if uniq_star[s] != uniq_end[s]:                                   
                 mut = sum([rCount['mutation'][int(uniq_star[s])-1],rCount['mutation'][int(uniq_end[s])-1]])
                 m_count.append(mut)
             else:
@@ -192,4 +191,11 @@ class hotspot_function(object):
              fc4.append(leng)
         fc4 = pd.DataFrame(fc4)    
         final_count = pd.concat([final_count,fc4], axis=1, ignore_index=True)
-        return(final_count)
+        
+        hotspot_rate = []
+        for w in range(np.size(uniq_star)):
+             rate = m_count[0].iloc[w]/sum([m_count[0]])
+             hotspot_rate.append(rate)
+        hotspot_rate = pd.DataFrame(hotspot_rate)    
+        final_count = pd.concat([final_count,hotspot_rate], axis=1, ignore_index=True)
+        return final_count
